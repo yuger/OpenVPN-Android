@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">vpn</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="open_vpn">开启VPN</string>
+    <string name="connecting">ToyVPN is connecting&#8230;</string>
+    <string name="connected">ToyVPN is connected!</string>
+    <string name="disconnected">ToyVPN is disconnected!</string>
+</resources>
