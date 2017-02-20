@@ -26,10 +26,12 @@ public class VPNLaunchHelper {
 
     private static String writeMiniVPN(Context context) {
         String[] abis;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) abis = getSupportedABIsLollipop();
-        else
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            abis = getSupportedABIsLollipop();
+        } else {
             //noinspection deprecation
             abis = new String[]{Build.CPU_ABI, Build.CPU_ABI2};
+        }
         String nativeAPI = NativeUtils.getNativeAPI();
         if (!nativeAPI.equals(abis[0])) {
             VpnStatus.logWarning(R.string.abi_mismatch, Arrays.toString(abis), nativeAPI);
@@ -54,7 +56,7 @@ public class VPNLaunchHelper {
         else return MININONPIEVPN;
     }
 
-    public static String[] replacePieWithNoPie(String[] mArgv) {
+    static String[] replacePieWithNoPie(String[] mArgv) {
         mArgv[0] = mArgv[0].replace(MINIPIEVPN, MININONPIEVPN);
         return mArgv;
     }
@@ -103,8 +105,10 @@ public class VPNLaunchHelper {
     }
 
     public static void startOpenVpn(VpnProfile startprofile, Context context) {
-        Intent startVPN = startprofile.prepareStartService(context);
-        if (startVPN != null) context.startService(startVPN);
+        Intent startVPN = startprofile.getStartServiceIntent(context);
+        if (startVPN != null) {
+            context.startService(startVPN);
+        }
     }
 
     public static String getConfigFilePath(Context context) {

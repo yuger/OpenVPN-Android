@@ -29,9 +29,10 @@ import java.util.UnknownFormatConversionException;
 import de.blinkt.openvpn.R;
 
 /**
+ *
  * Created by arne on 24.04.16.
  */
-public class LogItem implements Parcelable {
+class LogItem implements Parcelable {
     public static final Creator<LogItem> CREATOR = new Creator<LogItem>() {
         public LogItem createFromParcel(Parcel in) {
             return new LogItem(in);
@@ -42,7 +43,7 @@ public class LogItem implements Parcelable {
         }
     };
     // Default log priority
-    VpnStatus.LogLevel mLevel = VpnStatus.LogLevel.INFO;
+    private VpnStatus.LogLevel mLevel = VpnStatus.LogLevel.INFO;
     private Object[] mArgs = null;
     private String mMessage = null;
     private int mRessourceId;
@@ -54,13 +55,13 @@ public class LogItem implements Parcelable {
         mArgs = args;
     }
 
-    public LogItem(VpnStatus.LogLevel level, int verblevel, String message) {
+    LogItem(VpnStatus.LogLevel level, int verblevel, String message) {
         mMessage = message;
         mLevel = level;
         mVerbosityLevel = verblevel;
     }
 
-    public LogItem(byte[] in, int length) throws UnsupportedEncodingException {
+    LogItem(byte[] in, int length) throws UnsupportedEncodingException {
         ByteBuffer bb = ByteBuffer.wrap(in, 0, length);
         bb.get(); // ignore version
         logtime = bb.getLong();
@@ -113,7 +114,7 @@ public class LogItem implements Parcelable {
         if (bb.hasRemaining()) throw new UnsupportedEncodingException(bb.remaining() + " bytes left after unmarshaling everything");
     }
 
-    public LogItem(Parcel in) {
+    private LogItem(Parcel in) {
         mArgs = in.readArray(Object.class.getClassLoader());
         mMessage = in.readString();
         mRessourceId = in.readInt();
@@ -122,24 +123,24 @@ public class LogItem implements Parcelable {
         logtime = in.readLong();
     }
 
-    public LogItem(VpnStatus.LogLevel loglevel, int ressourceId, Object... args) {
+    LogItem(VpnStatus.LogLevel loglevel, int ressourceId, Object... args) {
         mRessourceId = ressourceId;
         mArgs = args;
         mLevel = loglevel;
     }
 
-    public LogItem(VpnStatus.LogLevel loglevel, String msg) {
+    LogItem(VpnStatus.LogLevel loglevel, String msg) {
         mLevel = loglevel;
         mMessage = msg;
     }
 
-    public LogItem(VpnStatus.LogLevel loglevel, int ressourceId) {
+    LogItem(VpnStatus.LogLevel loglevel, int ressourceId) {
         mRessourceId = ressourceId;
         mLevel = loglevel;
     }
 
     // TextUtils.join will cause not macked exeception in tests ....
-    public static String join(CharSequence delimiter, Object[] tokens) {
+    private static String join(CharSequence delimiter, Object[] tokens) {
         StringBuilder sb = new StringBuilder();
         boolean firstTime = true;
         for (Object token : tokens) {
@@ -173,14 +174,14 @@ public class LogItem implements Parcelable {
         if (!(obj instanceof LogItem)) return obj.equals(this);
         LogItem other = (LogItem) obj;
         return Arrays.equals(mArgs, other.mArgs) &&
-                ((other.mMessage == null && mMessage == other.mMessage) || mMessage.equals(other.mMessage)) &&
+                ((other.mMessage == null && mMessage == null) || mMessage.equals(other.mMessage)) &&
                 mRessourceId == other.mRessourceId &&
-                ((mLevel == null && other.mLevel == mLevel) || other.mLevel.equals(mLevel)) &&
+                ((mLevel == null && other.mLevel == null) || other.mLevel.equals(mLevel)) &&
                 mVerbosityLevel == other.mVerbosityLevel &&
                 logtime == other.logtime;
     }
 
-    public byte[] getMarschaledBytes() throws UnsupportedEncodingException, BufferOverflowException {
+    byte[] getMarschaledBytes() throws UnsupportedEncodingException, BufferOverflowException {
         ByteBuffer bb = ByteBuffer.allocate(16384);
         bb.put((byte) 0x0);               //version
         bb.putLong(logtime);              //8
@@ -239,7 +240,7 @@ public class LogItem implements Parcelable {
         return new String(utf8bytes, "UTF-8");
     }
 
-    public String getString(Context c) {
+    String getString(Context c) {
         try {
             if (mMessage != null) {
                 return mMessage;
@@ -302,7 +303,7 @@ public class LogItem implements Parcelable {
         return c.getString(R.string.mobile_info, argsext);
     }
 
-    public long getLogtime() {
+    long getLogtime() {
         return logtime;
     }
 
@@ -315,9 +316,7 @@ public class LogItem implements Parcelable {
         return mVerbosityLevel;
     }
 
-    public boolean verify() {
-        if (mLevel == null) return false;
-        if (mMessage == null && mRessourceId == 0) return false;
-        return true;
+    boolean verify() {
+        return mLevel != null && !(mMessage == null && mRessourceId == 0);
     }
 }

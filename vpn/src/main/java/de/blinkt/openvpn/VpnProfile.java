@@ -17,6 +17,7 @@ import android.security.KeyChainException;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 
 import org.spongycastle.util.io.pem.PemObject;
 import org.spongycastle.util.io.pem.PemWriter;
@@ -498,15 +499,9 @@ public class VpnProfile implements Serializable, Cloneable {
         return parts[0] + "  " + netmask;
     }
 
-    public Intent prepareStartService(Context context) {
-        Intent intent = getStartServiceIntent(context);
-        // TODO: Handle this?!
-//        if (mAuthenticationType == VpnProfile.TYPE_KEYSTORE || mAuthenticationType == VpnProfile.TYPE_USERPASS_KEYSTORE) {
-//            if (getKeyStoreCertificates(context) == null)
-//                return null;
-//        }
-        return intent;
-    }
+//    public Intent prepareStartService(Context context) {
+//        return getStartServiceIntent(context);
+//    }
 
     public void writeConfigFile(Context context) throws IOException {
         FileWriter cfg = new FileWriter(VPNLaunchHelper.getConfigFilePath(context));

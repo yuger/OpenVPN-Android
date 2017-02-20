@@ -1,1 +1,1 @@
-include ':vpnLib', ':vpn'
+include ':vpn'

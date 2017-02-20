@@ -32,8 +32,12 @@ public class ProfileManager {
     }
 
     private static VpnProfile get(String key) {
-        if (tmpprofile != null && tmpprofile.getUUIDString().equals(key)) return tmpprofile;
-        if (instance == null) return null;
+        if (tmpprofile != null && tmpprofile.getUUIDString().equals(key)) {
+            return tmpprofile;
+        }
+        if (instance == null) {
+            return null;
+        }
         return instance.profiles.get(key);
     }
 
@@ -59,7 +63,7 @@ public class ProfileManager {
     /**
      * Sets the profile that is connected (to connect if the service restarts)
      */
-    public static void setConnectedVpnProfile(Context c, VpnProfile connectedProfile) {
+    static void setConnectedVpnProfile(Context c, VpnProfile connectedProfile) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
         Editor prefsedit = prefs.edit();
         prefsedit.putString(LAST_CONNECTED_PROFILE, connectedProfile.getUUIDString());
@@ -70,11 +74,14 @@ public class ProfileManager {
     /**
      * Returns the profile that was last connected (to connect if the service restarts)
      */
-    public static VpnProfile getLastConnectedProfile(Context c) {
+    static VpnProfile getLastConnectedProfile(Context c) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
         String lastConnectedProfile = prefs.getString(LAST_CONNECTED_PROFILE, null);
-        if (lastConnectedProfile != null) return get(c, lastConnectedProfile);
-        else return null;
+        if (lastConnectedProfile != null) {
+            return get(c, lastConnectedProfile);
+        } else {
+            return null;
+        }
     }
 
     public static void setTemporaryProfile(VpnProfile tmp) {
@@ -90,11 +97,11 @@ public class ProfileManager {
         return get(profileUUID);
     }
 
-    public static VpnProfile getLastConnectedVpn() {
+    static VpnProfile getLastConnectedVpn() {
         return mLastConnectedVpn;
     }
 
-    public static VpnProfile getAlwaysOnVPN(Context context) {
+    static VpnProfile getAlwaysOnVPN(Context context) {
         checkInstance(context);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String uuid = prefs.getString("alwaysOnVpn", null);
@@ -114,7 +121,7 @@ public class ProfileManager {
         return null;
     }
 
-    public void saveProfileList(Context context) {
+    private void saveProfileList(Context context) {
         SharedPreferences sharedprefs = context.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
         Editor editor = sharedprefs.edit();
         editor.putStringSet("vpnlist", profiles.keySet());

@@ -61,7 +61,7 @@ public class VpnStatus {
         logException(LogLevel.ERROR, null, e);
     }
 
-    public static void logException(String context, Exception e) {
+    static void logException(String context, Exception e) {
         logException(LogLevel.ERROR, context, e);
     }
 
@@ -69,7 +69,7 @@ public class VpnStatus {
         return mLastLevel != ConnectionStatus.LEVEL_AUTH_FAILED && !(mLastLevel == ConnectionStatus.LEVEL_NOTCONNECTED);
     }
 
-    public static String getLastCleanLogMessage(Context c) {
+    static String getLastCleanLogMessage(Context c) {
         String message = mLaststatemsg;
         switch (mLastLevel) {
             case LEVEL_CONNECTED:
@@ -87,7 +87,9 @@ public class VpnStatus {
                    6 (i) optional TUN/TAP local IPv6 address.
 */
                 // Return only the assigned IP addresses in the UI
-                if (parts.length >= 7) message = String.format(Locale.US, "%s %s", parts[1], parts[6]);
+                if (parts.length >= 7) {
+                    message = String.format(Locale.CHINA, "%s %s", parts[1], parts[6]);
+                }
                 break;
         }
         while (message.endsWith(",")) message = message.substring(0, message.length() - 1);
@@ -110,7 +112,7 @@ public class VpnStatus {
         mLogFileHandler.sendMessage(m);
     }
 
-    public static void flushLog() {
+    static void flushLog() {
         mLogFileHandler.sendEmptyMessage(LogFileHandler.FLUSH_TO_DISK);
     }
 
@@ -142,16 +144,16 @@ public class VpnStatus {
         logListener.remove(ll);
     }
 
-    public synchronized static void addByteCountListener(ByteCountListener bcl) {
+    synchronized static void addByteCountListener(ByteCountListener bcl) {
         bcl.updateByteCount(mlastByteCount[0], mlastByteCount[1], mlastByteCount[2], mlastByteCount[3]);
         byteCountListener.add(bcl);
     }
 
-    public synchronized static void removeByteCountListener(ByteCountListener bcl) {
+    synchronized static void removeByteCountListener(ByteCountListener bcl) {
         byteCountListener.remove(bcl);
     }
 
-    public synchronized static void addStateListener(StateListener sl) {
+    synchronized static void addStateListener(StateListener sl) {
         if (!stateListener.contains(sl)) {
             stateListener.add(sl);
             if (mLaststate != null) sl.updateState(mLaststate, mLaststatemsg, mLastStateresid, mLastLevel);
@@ -189,7 +191,7 @@ public class VpnStatus {
         }
     }
 
-    public static void updateStatePause(OpenVPNManagement.pauseReason pauseReason) {
+    static void updateStatePause(OpenVPNManagement.pauseReason pauseReason) {
         switch (pauseReason) {
             case noNetwork:
                 VpnStatus.updateStateString("NONETWORK", "", R.string.state_nonetwork, ConnectionStatus.LEVEL_NONETWORK);
@@ -219,23 +221,23 @@ public class VpnStatus {
         return ConnectionStatus.UNKNOWN_LEVEL;
     }
 
-    public synchronized static void removeStateListener(StateListener sl) {
+    synchronized static void removeStateListener(StateListener sl) {
         stateListener.remove(sl);
     }
 
-    synchronized public static LogItem[] getlogbuffer() {
+    synchronized static LogItem[] getlogbuffer() {
         // The stoned way of java to return an array from a vector
         // brought to you by eclipse auto complete
         return logbuffer.toArray(new LogItem[logbuffer.size()]);
     }
 
-    public static void updateStateString(String state, String msg) {
+    static void updateStateString(String state, String msg) {
         int rid = getLocalizedState(state);
         ConnectionStatus level = getLevel(state);
         updateStateString(state, msg, rid, level);
     }
 
-    public synchronized static void updateStateString(String state, String msg, int resid, ConnectionStatus level) {
+    synchronized static void updateStateString(String state, String msg, int resid, ConnectionStatus level) {
         // Workound for OpenVPN doing AUTH and wait and being connected
         // Simply ignore these state
         if (mLastLevel == ConnectionStatus.LEVEL_CONNECTED && (state.equals("WAIT") || state.equals("AUTH"))) {
@@ -252,19 +254,19 @@ public class VpnStatus {
         //newLogItem(new LogItem((LogLevel.DEBUG), String.format("New OpenVPN Status (%s->%s): %s",state,level.toString(),msg)));
     }
 
-    public static void logInfo(String message) {
+    static void logInfo(String message) {
         newLogItem(new LogItem(LogLevel.INFO, message));
     }
 
-    public static void logDebug(String message) {
+    static void logDebug(String message) {
         newLogItem(new LogItem(LogLevel.DEBUG, message));
     }
 
-    public static void logInfo(int resourceId, Object... args) {
+    static void logInfo(int resourceId, Object... args) {
         newLogItem(new LogItem(LogLevel.INFO, resourceId, args));
     }
 
-    public static void logDebug(int resourceId, Object... args) {
+    static void logDebug(int resourceId, Object... args) {
         newLogItem(new LogItem(LogLevel.DEBUG, resourceId, args));
     }
 
@@ -297,11 +299,11 @@ public class VpnStatus {
         newLogItem(new LogItem(LogLevel.ERROR, msg));
     }
 
-    public static void logWarning(int resourceId, Object... args) {
+    static void logWarning(int resourceId, Object... args) {
         newLogItem(new LogItem(LogLevel.WARNING, resourceId, args));
     }
 
-    public static void logWarning(String msg) {
+    static void logWarning(String msg) {
         newLogItem(new LogItem(LogLevel.WARNING, msg));
     }
 
@@ -313,11 +315,11 @@ public class VpnStatus {
         newLogItem(new LogItem(LogLevel.ERROR, resourceId, args));
     }
 
-    public static void logMessageOpenVPN(LogLevel level, int ovpnlevel, String message) {
+    static void logMessageOpenVPN(LogLevel level, int ovpnlevel, String message) {
         newLogItem(new LogItem(level, ovpnlevel, message));
     }
 
-    public static synchronized void updateByteCount(long in, long out) {
+    static synchronized void updateByteCount(long in, long out) {
         long lastIn = mlastByteCount[0];
         long lastOut = mlastByteCount[1];
         long diffIn = mlastByteCount[2] = Math.max(0, in - lastIn);
@@ -328,7 +330,7 @@ public class VpnStatus {
         }
     }
 
-    public enum ConnectionStatus {
+    enum ConnectionStatus {
         LEVEL_CONNECTED,
         LEVEL_VPNPAUSED,
         LEVEL_CONNECTING_SERVER_REPLIED,
@@ -373,15 +375,15 @@ public class VpnStatus {
         }
     }
 
-    public interface LogListener {
+    interface LogListener {
         void newLog(LogItem logItem);
     }
 
-    public interface StateListener {
+    interface StateListener {
         void updateState(String state, String logmessage, int localizedResId, ConnectionStatus level);
     }
 
-    public interface ByteCountListener {
+    interface ByteCountListener {
         void updateByteCount(long in, long out, long diffIn, long diffOut);
     }
 }
